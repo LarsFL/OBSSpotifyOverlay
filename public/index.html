@@ -5,24 +5,97 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Configurate overlay</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style type="text/css">
+        #container {
+            display: block;
+        }
+        #configurator, #link {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="intro">
+    <div id="configurator">
         <h1>
             Configure the overlay
         </h1>
         <p>
             Use this screen to change the settings you want, then generate a URL
         </p>
-    </div>
-    <div id="configurator">
-        <form>
+        <form name="config">
             <label for="bclose">Hide when paused:</label>
             <input type="checkbox" id="bclose" name="bclose">
             <br>
             <label for="ccolor">Accent color:</label>
             <input type="color" id="ccolor" name="ccolor">
+            <br>
+            <label for="ssubmit">Generate</label>
+            <input type="submit" id="ssubmit" name="ssubmit">Generate
         </form>
     </div>
+    <div id="link">
+        <h1>Your link has been copied</h1>
+        <p>You can now paste this into a OBS browser source</p>
+        <p>Please use a 1000x200 resolution</p>
+        <br>
+        <p>In case it didn't automatically copy, here's the link</p>
+        <p id="url"></p>
+    </div>
+    <div id="container">
+        <div id="login">
+            <h1>Please authorize Spotify</h1>
+            <a href="/login" class="btn btn-primary">Authorize with Spotify</a>
+        </div>
+        <div id="loggedin">
+            <!--
+                <div id="oauth">
+                </div>
+            -->
+            <div id="current-playing"></div>
+            <!--
+                <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+            -->
+        </div>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script>
+        (function () {
+            function getHashParams() {
+                var hashParams = {};
+                var e,
+                    r = /([^&;=]+)=?([^&;]*)/g,
+                    q = window.location.hash.substring(1);
+                while ((e = r.exec(q))) {
+                    hashParams[e[1]] = decodeURIComponent(e[2]);
+                }
+                return hashParams;
+            }
+            
+            var params = getHashParams();
+            console.log(params);
+            var access_token = params.access_token,
+                refresh_token = params.refresh_token,
+                error = params.error;
+
+            if (refresh_token && access_token) {
+                console.log("Logged in");
+                $("#container").hide();
+                $("#configurator").show();
+            }
+
+            $("form").submit(function(event) {
+                event.preventDefault();
+                link = `http://localhost:8888/overlay.html#access_token=${access_token}` +
+                    `&refresh_token=${refresh_token}&accent_color=${document.forms["config"]["ccolor"].value}` +
+                    `&hide_on_pause=${document.forms["config"]["bclose"].value}` 
+                console.log(link);
+                navigator.clipboard.writeText(link);
+                $("#link").show();
+                $("#url").text(link);
+                $("#configurator").hide();
+            });
+        })();
+    </script>
 </body>
 </html>

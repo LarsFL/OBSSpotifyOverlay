@@ -124,7 +124,7 @@
     <div class="container">
       <div id="login">
         <h1>Please authorize Spotify</h1>
-        <a href="/login" class="btn btn-primary">Authorize with Spotify</a>
+        <a href="/" class="btn btn-primary">Authorize with Spotify</a>
       </div>
       <div id="loggedin">
         <!--
@@ -139,34 +139,34 @@
     </div>
 
     <script id="current-playing-template" type="text/x-handlebars-template">
-	{{#orCond is_playing hide_on_pause}}
-      <div class="player">
-        <div id="waveform">
-          {{#if is_playing}}
-            <img src="./waveform.gif" />
-          {{else}}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path
-                d="M200 160C186.8 160 176 170.8 176 184v144C176 341.3 186.8 352 200 352S224 341.3 224 328v-144C224 170.8 213.3 160 200 160zM312 160C298.8 160 288 170.8 288 184v144c0 13.25 10.75 24 24 24s24-10.75 24-24v-144C336 170.8 325.3 160 312 160zM256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464z"
-              ></path></svg>
-          {{/if}}
-        </div>
-        <div id="album-cover">
-          <img src={{item.album.images.0.url}} />
-        </div>
-        <div id="info">
-          <div id="title">
-            <p>
-              {{item.name}}
-            </p>
+      {{#orCond is_playing hide_on_pause}}
+          <div class="player">
+            <div id="waveform">
+              {{#if is_playing}}
+                <img src="./waveform.gif" />
+              {{else}}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path
+                    d="M200 160C186.8 160 176 170.8 176 184v144C176 341.3 186.8 352 200 352S224 341.3 224 328v-144C224 170.8 213.3 160 200 160zM312 160C298.8 160 288 170.8 288 184v144c0 13.25 10.75 24 24 24s24-10.75 24-24v-144C336 170.8 325.3 160 312 160zM256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464z"
+                  ></path></svg>
+              {{/if}}
+            </div>
+            <div id="album-cover">
+              <img src={{item.album.images.0.url}} />
+            </div>
+            <div id="info">
+              <div id="title">
+                <p>
+                  {{item.name}}
+                </p>
+              </div>
+              <div id="artist">
+                <p>
+                  {{item.artists.0.name}}
+                </p>
+              </div>
+            </div>
           </div>
-          <div id="artist">
-            <p>
-              {{item.artists.0.name}}
-            </p>
-          </div>
-        </div>
-      </div>
-	{{/orCond}}
+      {{/orCond}}
     </script>
 
     <script id="oauth-template" type="text/x-handlebars-template">
@@ -204,12 +204,12 @@
           accent_color = params.accent_color ? params.accent_color : "#9f45c2",
           hide_on_pause = "hide_on_pause" in params ? params.hide_on_pause == "true" : true;
 		
-		Handlebars.registerHelper('orCond', function(v1, v2, options) {
-			if(v1 || !v2) {
-				return options.fn(this);
-			}
-			return options.inverse(this);
-		});
+        Handlebars.registerHelper('orCond', function(v1, v2, options) {
+          if(v1 || !v2) {
+            return options.fn(this);
+          }
+          return options.inverse(this);
+        });
 
         var oauthSource = document.getElementById("oauth-template").innerHTML,
           oauthTemplate = Handlebars.compile(oauthSource),
