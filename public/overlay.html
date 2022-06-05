@@ -75,7 +75,7 @@
 
       #info {
         display: flex;
-        flex: 1;
+        flex: 1 1 auto;
         flex-direction: column;
         margin-left: 50px;
         min-width: 0;
@@ -95,6 +95,7 @@
         min-width: 0;
       }
       #title {
+        min-width: 0px;
         align-items: self-end;
       }
       #artist {
@@ -102,11 +103,10 @@
       }
       #title p {
         display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         font-weight: bold;
         color: white;
+        width: inherit;
+        position: relative;
       }
 
       #artist p {
@@ -127,45 +127,51 @@
         <a href="/" class="btn btn-primary">Authorize with Spotify</a>
       </div>
       <div id="loggedin">
-        <!--
-            <div id="oauth">
-            </div>
-        -->
         <div id="current-playing"></div>
-        <!--
-            <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
-        -->
       </div>
     </div>
 
     <script id="current-playing-template" type="text/x-handlebars-template">
       {{#orCond is_playing hide_on_pause}}
-          <div class="player">
-            <div id="waveform">
-              {{#if is_playing}}
-                <img src="./waveform.gif" />
-              {{else}}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path
-                    d="M200 160C186.8 160 176 170.8 176 184v144C176 341.3 186.8 352 200 352S224 341.3 224 328v-144C224 170.8 213.3 160 200 160zM312 160C298.8 160 288 170.8 288 184v144c0 13.25 10.75 24 24 24s24-10.75 24-24v-144C336 170.8 325.3 160 312 160zM256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464z"
-                  ></path></svg>
-              {{/if}}
-            </div>
-            <div id="album-cover">
+        <div class="player">
+          <div id="waveform">
+            {{#if is_playing}}
+              <img src="./waveform.gif" />
+            {{else}}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+              ><path
+                  d="M200 160C186.8 160 176 170.8 176 184v144C176 341.3 186.8 352 200 352S224 341.3 224 328v-144C224 170.8 213.3 160 200 160zM312 160C298.8 160 288 170.8 288 184v144c0 13.25 10.75 24 24 24s24-10.75 24-24v-144C336 170.8 325.3 160 312 160zM256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464z"
+                ></path></svg>
+            {{/if}}
+          </div>
+          <div id="album-cover">
+            {{#if item.album.images includeZero=true}}
               <img src={{item.album.images.0.url}} />
+            {{else}}
+              <img src="./music-placeholder.png"/>
+            {{/if}}
+          </div>
+          <div id="info">
+            <div id="title">
+              <p id="title_name">
+                {{item.name}}
+              </p>
             </div>
-            <div id="info">
-              <div id="title">
-                <p>
-                  {{item.name}}
-                </p>
-              </div>
-              <div id="artist">
-                <p>
-                  {{item.artists.0.name}}
-                </p>
-              </div>
+            <div id="artist">
+              <p>
+                {{#each item.artists}}
+                  {{~#if @first~}}
+                    {{~this.name~}}
+                  {{~else~}},
+                    {{this.name~}}
+                  {{~/if~}}
+                {{/each}}
+              </p>
             </div>
           </div>
+        </div>
       {{/orCond}}
     </script>
 
@@ -202,10 +208,11 @@
           refresh_token = params.refresh_token,
           error = params.error,
           accent_color = params.accent_color ? params.accent_color : "#9f45c2",
-          hide_on_pause = "hide_on_pause" in params ? params.hide_on_pause == "on" : true;
-		
-        Handlebars.registerHelper('orCond', function(v1, v2, options) {
-          if(v1 || !v2) {
+          hide_on_pause =
+            "hide_on_pause" in params ? params.hide_on_pause == "on" : true;
+
+        Handlebars.registerHelper("orCond", function (v1, v2, options) {
+          if (v1 || !v2) {
             return options.fn(this);
           }
           return options.inverse(this);
@@ -244,17 +251,41 @@
               Authorization: "Bearer " + access_token,
             },
             success: function (response) {
-			response["hide_on_pause"] = hide_on_pause;
-			currentPlayingPlaceholder.innerHTML =
-                currentPlayingTemplate(response);
+              response["titleLeft"] = "left: ${window.}}"
+              response["hide_on_pause"] = hide_on_pause;
+              currentPlayingPlaceholder.innerHTML =
+              currentPlayingTemplate(response);
+              $('#title_name').css('left', window.titleLeft);
             },
             error: function () {
               refreshToken();
             },
           });
         }
+        
+        function scrollText(left) {
+          title = document.querySelector("#title");
+          title_text = document.querySelector("#title_name");
+          try {
+            var width = title_text.offsetWidth,
+              left = window.titleLeft - 1;
+            if (width >= title.offsetWidth) {
+              window.titleLeft = -left > width ? title_text.offsetWidth : left;
+              $('#title_name').css('left', left);
+            } else {
+              window.titleLeft = 0;
+              $('#title_name').css('left', left);
+            }
+          } catch {
+
+          }
+        };
 
         var updater = setInterval(updatePlayer, 2500);
+        window.titleLeft = 0;
+        var scroll_text = setInterval(function () {
+              scrollText();
+            }, 25);
 
         if (error) {
           alert("There was an error during the authentication");
