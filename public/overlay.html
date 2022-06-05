@@ -178,7 +178,7 @@
     </script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script>
       (function () {
         /**
@@ -202,7 +202,7 @@
           refresh_token = params.refresh_token,
           error = params.error,
           accent_color = params.accent_color ? params.accent_color : "#9f45c2",
-          hide_on_pause = "hide_on_pause" in params ? params.hide_on_pause == "true" : true;
+          hide_on_pause = "hide_on_pause" in params ? params.hide_on_pause == "on" : true;
 		
         Handlebars.registerHelper('orCond', function(v1, v2, options) {
           if(v1 || !v2) {
@@ -224,7 +224,7 @@
 
         function refreshToken() {
           $.ajax({
-            url: "/refresh_token",
+            url: "/spotify/refresh_token",
             data: {
               refresh_token: refresh_token,
             },

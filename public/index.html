@@ -33,22 +33,23 @@
             <input type="submit" id="ssubmit" name="ssubmit">Generate
         </form>
     </div>
-    <div id="link">
+  	<div id="link">
         <h1>Your link has been copied</h1>
         <p>You can now paste this into a OBS browser source</p>
         <p>Please use a 1000x200 resolution</p>
         <br>
         <p>In case it didn't automatically copy, here's the link</p>
         <p id="url"></p>
+
     </div>
     <div id="container">
         <div id="login">
             <h1>Please authorize Spotify</h1>
-            <a href="/login" class="btn btn-primary">Authorize with Spotify</a>
+            <a href="http://localhost:8888/login" class="btn btn-primary">Authorize with Spotify</a>
         </div>
         <div id="loggedin">
-            <!--
                 <div id="oauth">
+            <!--
                 </div>
             -->
             <div id="current-playing"></div>
@@ -58,7 +59,7 @@
         </div>
     </div>
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script>
         (function () {
             function getHashParams() {
@@ -71,10 +72,9 @@
                 }
                 return hashParams;
             }
-            
+
             var params = getHashParams();
-            console.log(params);
-            var access_token = params.access_token,
+          	var access_token = params.access_token,
                 refresh_token = params.refresh_token,
                 error = params.error;
 
@@ -86,6 +86,7 @@
 
             $("form").submit(function(event) {
                 event.preventDefault();
+                // https://obs.larsfl.com/spotify/overlay.html#access_token=
                 link = `http://localhost:8888/overlay.html#access_token=${access_token}` +
                     `&refresh_token=${refresh_token}&accent_color=${document.forms["config"]["ccolor"].value}` +
                     `&hide_on_pause=${document.forms["config"]["bclose"].value}` 
