@@ -31,11 +31,9 @@
         padding: 0;
       }
 
-      .player {
+      #player {
         width: 1000px;
         height: 200px;
-        background-color: #ee82ee00;
-        border-radius: 25px;
         display: flex;
         flex-direction: row;
         align-items: flex-start;
@@ -133,7 +131,7 @@
 
     <script id="current-playing-template" type="text/x-handlebars-template">
       {{#orCond is_playing hide_on_pause}}
-        <div class="player">
+        <div id="player">
           <div id="waveform">
             {{#if is_playing}}
               <img src="./waveform.gif" />
@@ -150,7 +148,7 @@
             {{#if item.album.images includeZero=true}}
               <img src={{item.album.images.0.url}} />
             {{else}}
-              <img src="./music-placeholder.png"/>
+              <img src="./music-placeholder.png" />
             {{/if}}
           </div>
           <div id="info">
@@ -207,12 +205,25 @@
         var access_token = params.access_token,
           refresh_token = params.refresh_token,
           error = params.error,
-          accent_color = params.accent_color ? params.accent_color : "#9f45c2",
-          hide_on_pause =
-            "hide_on_pause" in params ? params.hide_on_pause == "on" : true;
+          hide_waveform = params.hide_waveform ? params.hide_waveform : "false",
+          album_color = params.album_color ? params.album_color : "#8929A3",
+          hide_on_pause = params.hide_on_pause ? params.hide_on_pause : "false",
+          title_color = params.title_color ? params.title_color : "#ffffff",
+          artist_color = params.artist_color ? params.artist_color : "#9f45c2",
+          background_color = params.background_color
+            ? params.background_color
+            : "#00000000",
+          background_radius = params.background_radius
+            ? params.background_radius
+            : "25px",
+          border_width = params.border_width ? params.border_width : "1px";
+        (border_style = params.border_style ? params.border_style : "none"),
+          (border_color = params.border_color
+            ? params.border_color
+            : "#000000");
 
         Handlebars.registerHelper("orCond", function (v1, v2, options) {
-          if (v1 || !v2) {
+          if (v1 || !(v2 == "true")) {
             return options.fn(this);
           }
           return options.inverse(this);
@@ -251,18 +262,38 @@
               Authorization: "Bearer " + access_token,
             },
             success: function (response) {
-              response["titleLeft"] = "left: ${window.}}"
+              response["titleLeft"] = "left: ${window.}}";
               response["hide_on_pause"] = hide_on_pause;
               currentPlayingPlaceholder.innerHTML =
-              currentPlayingTemplate(response);
-              $('#title_name').css('left', window.titleLeft);
+                currentPlayingTemplate(response);
+              $("#title_name").css("left", window.titleLeft);
+              document.getElementById(
+                "album-cover"
+              ).firstElementChild.style.borderColor = album_color;
+              document.getElementById("waveform").style.display =
+                hide_waveform == "true" ? "none" : "flex";
+              document.getElementById("album-cover").style.marginLeft =
+                hide_waveform == "true" ? "20px" : "50px";
+              document.getElementById("title_name").style.color = title_color;
+              document.getElementById("artist").firstElementChild.style.color =
+                artist_color;
+              document.getElementById("player").style.backgroundColor =
+                background_color;
+              document.getElementById("player").style.borderRadius =
+                background_radius;
+              document.getElementById("player").style.borderWidth =
+                border_width;
+              document.getElementById("player").style.borderStyle =
+                border_style;
+              document.getElementById("player").style.borderColor =
+                border_color;
             },
             error: function () {
               refreshToken();
             },
           });
         }
-        
+
         function scrollText(left) {
           title = document.querySelector("#title");
           title_text = document.querySelector("#title_name");
@@ -271,21 +302,19 @@
               left = window.titleLeft - 1;
             if (width >= title.offsetWidth) {
               window.titleLeft = -left > width ? title_text.offsetWidth : left;
-              $('#title_name').css('left', left);
+              $("#title_name").css("left", left);
             } else {
               window.titleLeft = 0;
-              $('#title_name').css('left', left);
+              $("#title_name").css("left", left);
             }
-          } catch {
-
-          }
-        };
+          } catch {}
+        }
 
         var updater = setInterval(updatePlayer, 2500);
         window.titleLeft = 0;
         var scroll_text = setInterval(function () {
-              scrollText();
-            }, 25);
+          scrollText();
+        }, 25);
 
         if (error) {
           alert("There was an error during the authentication");

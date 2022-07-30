@@ -4,15 +4,134 @@
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Configurate overlay</title>
+	<link
+      rel="stylesheet"
+      href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap"
+      rel="stylesheet"
+    />
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <style type="text/css">
+		body {
+			background-color: #000000;
+			color: white;
+		}
+
         #container {
             display: block;
         }
         #configurator, #link {
             display: none;
         }
+		#configurator form {
+			max-width: 300px;
+		}
     </style>
+	<style type="text/css">  
+		.text-overflow {
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		  white-space: nowrap;
+		  width: 500px;
+		}
+  
+		.container-preview {
+		  background-color: #00000000;
+		  color: #000000;
+		  margin: 0;
+		  padding: 0;
+		  margin-top: 150px;
+		}
+  
+		#player {
+		  width: 1000px;
+		  height: 200px;
+		  display: flex;
+		  flex-direction: row;
+		  align-items: flex-start;
+		}
+  
+		#waveform {
+		  display: flex;
+		  flex: 1;
+		  margin-left: 50px;
+		  height: 50%;
+		  align-self: center;
+		  flex: 0 1 auto;
+		}
+  
+		#waveform img,
+		svg {
+		  -webkit-filter: invert(1);
+		  filter: invert(1);
+		}
+		#album-cover {
+		  display: flex;
+		  flex: 1;
+		  height: 80%;
+		  align-self: center;
+		  margin-left: 50px;
+		  flex: 0 1 auto;
+		}
+  
+		#album-cover img {
+		  border-radius: 10%;
+		  border: 10px solid #9f45c271;
+		}
+  
+		#info {
+		  display: flex;
+		  flex: 1 1 auto;
+		  flex-direction: column;
+		  margin-left: 50px;
+		  min-width: 0;
+		  align-self: stretch;
+		}
+  
+		#title,
+		#artist {
+		  font-family: "Raleway", sans-serif;
+		  font-size: 40px;
+		  white-space: nowrap;
+		  /* max-width: inherit; */
+		  display: flex;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		  flex: 1 1 auto;
+		  min-width: 0;
+		}
+		#title {
+		  min-width: 0px;
+		  align-items: self-end;
+		}
+		#artist {
+		  align-items: self-start;
+		}
+		#title p {
+		  display: block;
+		  font-weight: bold;
+		  color: white;
+		  width: inherit;
+		  position: relative;
+		}
+  
+		#artist p {
+		  display: block;
+		  white-space: nowrap;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		  color: #9f45c2;
+		  font-weight: bold;
+		}
+
+		option, select {
+			background-color: #000000;
+		}
+	  </style>
 </head>
 <body>
     <div id="configurator">
@@ -26,11 +145,47 @@
             <label for="bclose">Hide when paused:</label>
             <input type="checkbox" id="bclose" name="bclose">
             <br>
-            <label for="ccolor">Accent color:</label>
-            <input type="color" id="ccolor" name="ccolor">
+			<label for="wclose">Hide playing indicator:</label>
+            <input type="checkbox" id="wclose" name="wclose">
+            <br>
+            <label for="acolor">Album border color:</label>
+            <input type="color" id="acolor" name="acolor" value="#8929A3">
+			<br>
+            <label for="tcolor">Title color:</label>
+            <input type="color" id="tcolor" name="tcolor" value="#ffffff">
+			<br>
+            <label for="pcolor">Artist color:</label>
+            <input type="color" id="pcolor" name="pcolor" value="#9f45c2">
+			<br>
+            <label for="bcolor">Background color:</label>
+            <input type="color" id="bcolor" name="bcolor" value="#9f45c2">
+			<br>
+            <label for="balpha">Background opacity:</label>
+            <input type="range" id="balpha" name="balpha" min="0" max="255" value="0">
+			<br>
+            <label for="bradius">Background rounding:</label>
+            <input type="range" id="bradius" name="bradius" min="0" max="100" value="25">
+            <br>
+			<label for="bwidth">Border width:</label>
+            <input type="range" id="bwidth" name="bwidth" min="0" max="5" value="1">
+			<br>
+			<label for="bstyle">Border style:</label>
+            <select type="select" id="bstyle" name="bstyle">
+				<option value="none">None</option>
+				<option value="solid">Solid</option>
+				<option value="dotted">Dotted</option>
+				<option value="dashed">Dashed</option>
+				<option value="inset">Inset</option>
+				<option value="outset">Outset</option>
+				<option value="ridge">Ridge</option>
+				<option value="groove">Groove</option>
+			</select>
+			<br>
+            <label for="brcolor">Border color:</label>
+            <input type="color" id="brcolor" name="brcolor" value="#ff0000">
             <br>
             <label for="ssubmit">Generate</label>
-            <input type="submit" id="ssubmit" name="ssubmit">Generate
+            <input type="submit" id="ssubmit" name="ssubmit">
         </form>
     </div>
   	<div id="link">
@@ -49,15 +204,55 @@
         </div>
         <div id="loggedin">
                 <div id="oauth">
-            <!--
+            
                 </div>
-            -->
+           
             <div id="current-playing"></div>
             <!--
                 <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
             -->
         </div>
     </div>
+	<div class="container-preview">
+		<div id="loggedin-preview">
+		  <div id="current-playing-preview"></div>
+		</div>
+	  </div>
+    <script id="current-playing-template" type="text/x-handlebars-template">
+          <div id="player">
+            <div id="waveform">
+              {{#if is_playing}}
+                <img src="./waveform.gif" />
+              {{else}}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                ><path
+                    d="M200 160C186.8 160 176 170.8 176 184v144C176 341.3 186.8 352 200 352S224 341.3 224 328v-144C224 170.8 213.3 160 200 160zM312 160C298.8 160 288 170.8 288 184v144c0 13.25 10.75 24 24 24s24-10.75 24-24v-144C336 170.8 325.3 160 312 160zM256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464z"
+                  ></path></svg>
+              {{/if}}
+            </div>
+            <div id="album-cover">
+              {{#if item.album.images includeZero=true}}
+                <img src={{item.album.images.0.url}} />
+              {{else}}
+                <img src="./music-placeholder.png"/>
+              {{/if}}
+            </div>
+            <div id="info">
+              <div id="title">
+                <p id="title_name">
+                  Probably a great song
+                </p>
+              </div>
+              <div id="artist">
+                <p>
+                  Some great artist, another artist
+                </p>
+              </div>
+            </div>
+          </div>
+      </script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script>
@@ -84,12 +279,49 @@
                 $("#configurator").show();
             }
 
+			var currentPlayingSource = document.getElementById(
+            "current-playing-template"
+			).innerHTML,
+			currentPlayingTemplate = Handlebars.compile(currentPlayingSource),
+			currentPlayingPlaceholder =
+            document.getElementById("current-playing-preview");
+
+			currentPlayingPlaceholder.innerHTML =
+              currentPlayingTemplate();
+
+            $("form").change(function(event) {
+                event.preventDefault();
+				backgroundHex = parseInt(document.forms["config"]["balpha"].value).toString(16);
+				backgroundHex = backgroundHex.length == 1 ? "0" + backgroundHex : backgroundHex;
+				$("#loggedin-preview").show();
+				document.getElementById("waveform").style.display = document.forms["config"]["wclose"].checked ? "none" : "flex";
+				document.getElementById("album-cover").style.marginLeft = document.forms["config"]["wclose"].checked ? "20px" : "50px";
+				document.getElementById("album-cover").firstElementChild.style.borderColor = document.forms["config"]["acolor"].value;
+				document.getElementById("title_name").style.color = document.forms["config"]["tcolor"].value;
+				document.getElementById("artist").firstElementChild.style.color = document.forms["config"]["pcolor"].value;
+				document.getElementById("player").style.backgroundColor = document.forms["config"]["bcolor"].value + backgroundHex;
+				document.getElementById("player").style.borderRadius = document.forms["config"]["bradius"].value + "px";
+				document.getElementById("player").style.borderWidth = document.forms["config"]["bwidth"].value + "px";
+				document.getElementById("player").style.borderStyle = document.forms["config"]["bstyle"].value;
+				document.getElementById("player").style.borderColor = document.forms["config"]["brcolor"].value;
+            })
+
             $("form").submit(function(event) {
                 event.preventDefault();
+				backgroundHex = parseInt(document.forms["config"]["balpha"].value).toString(16);
+				backgroundHex = backgroundHex.length == 1 ? "0" + backgroundHex : backgroundHex;
                 // https://obs.larsfl.com/spotify/overlay.html#access_token=
-                link = `http://localhost:8888/overlay.html#access_token=${access_token}` +
-                    `&refresh_token=${refresh_token}&accent_color=${document.forms["config"]["ccolor"].value}` +
-                    `&hide_on_pause=${document.forms["config"]["bclose"].value}` 
+                link = `http://localhost:8888/overlay.html#access_token=${access_token}`;
+				link += `&refresh_token=${refresh_token}&album_color=${document.forms["config"]["acolor"].value}`;
+				link += `&hide_waveform=${document.forms["config"]["wclose"].checked}`;
+				link += `&hide_on_pause=${document.forms["config"]["bclose"].checked}`;
+				link += `&title_color=${document.forms["config"]["tcolor"].value}`;
+				link += `&artist_color=${document.forms["config"]["pcolor"].value}`;
+				link += `&background_color=${document.forms["config"]["bcolor"].value + backgroundHex}`;
+				link += `&background_radius=${document.forms["config"]["bradius"].value + "px"}`;
+				link += `&border_width=${document.forms["config"]["bwidth"].value + "px"}`;
+				link += `&border_style=${document.forms["config"]["bstyle"].value}`;
+				link += `&border_color=${document.forms["config"]["brcolor"].value}`;
                 console.log(link);
                 navigator.clipboard.writeText(link);
                 $("#link").show();
